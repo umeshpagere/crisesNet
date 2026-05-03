@@ -1,0 +1,13 @@
+Analyze this crisis report for authenticity.
+
+Crisis Type: {crisis_type}
+Description: {description}
+Location: {location}
+Reporter History: {reporter_history} past reports
+Corroborating Sources: {corroborating_sources}
+
+Assess if this is a genuine crisis or potential false alarm.
+Consider: specificity of details, urgency indicators, coherence, corroboration.
+
+Respond with ONLY a confidence score between 0.0 (definitely false alarm) and 1.0 (definitely genuine).
+Example: 0.85

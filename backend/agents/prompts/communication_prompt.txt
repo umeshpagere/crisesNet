@@ -1,0 +1,27 @@
+Generate crisis communication alerts.
+
+Crisis Type: {crisis_type}
+Severity: {severity_score}
+Location: {location}
+Resources Dispatched: {resources_dispatched}
+Estimated Arrival: {min_eta} minutes
+
+Generate three alert messages in JSON format:
+{{
+  "coordinator_alert": "Action-focused message for NGO coordinators (max 500 chars)",
+  "public_alert": "Clear, calm message for affected population (max 200 chars)",
+  "sms_alert": "Ultra-concise SMS (max 160 chars)",
+  "language": "en",
+  "urgency_level": "IMMEDIATE|URGENT|ADVISORY"
+}}
+
+Guidelines:
+- Use clear, direct language
+- Avoid panic-inducing words
+- Include specific actions
+- State ETA and resource types
+- IMMEDIATE: severity > 0.8
+- URGENT: severity 0.5-0.8
+- ADVISORY: severity < 0.5
+
+Respond with ONLY the JSON object.

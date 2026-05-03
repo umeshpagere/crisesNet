@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1777740701730" clover="3.2.0">
+  <project timestamp="1777740701730" name="All files">
+    <metrics statements="26" coveredstatements="0" conditionals="2" coveredconditionals="0" methods="0" coveredmethods="0" elements="28" coveredelements="0" complexity="0" loc="26" ncloc="26" packages="1" files="1" classes="1"/>
+    <file name="index.ts" path="/Users/umeshpagere/Documents/crisisnet-api/mobile/CrisisNetMobile/src/constants/index.ts">
+      <metrics statements="26" coveredstatements="0" conditionals="2" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      <line num="8" count="0" type="stmt"/>
+      <line num="13" count="0" type="stmt"/>
+      <line num="14" count="0" type="stmt"/>
+      <line num="15" count="0" type="stmt"/>
+      <line num="16" count="0" type="stmt"/>
+      <line num="17" count="0" type="stmt"/>
+      <line num="18" count="0" type="stmt"/>
+      <line num="19" count="0" type="stmt"/>
+      <line num="22" count="0" type="stmt"/>
+      <line num="23" count="0" type="stmt"/>
+      <line num="24" count="0" type="stmt"/>
+      <line num="25" count="0" type="stmt"/>
+      <line num="28" count="0" type="stmt"/>
+      <line num="29" count="0" type="stmt"/>
+      <line num="30" count="0" type="stmt"/>
+      <line num="33" count="0" type="cond" truecount="0" falsecount="2"/>
+      <line num="35" count="0" type="stmt"/>
+      <line num="42" count="0" type="stmt"/>
+      <line num="50" count="0" type="stmt"/>
+      <line num="58" count="0" type="stmt"/>
+      <line num="59" count="0" type="stmt"/>
+      <line num="62" count="0" type="stmt"/>
+      <line num="73" count="0" type="stmt"/>
+      <line num="84" count="0" type="stmt"/>
+      <line num="85" count="0" type="stmt"/>
+      <line num="88" count="0" type="stmt"/>
+    </file>
+  </project>
+</coverage>
