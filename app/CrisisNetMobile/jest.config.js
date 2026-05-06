@@ -3,7 +3,7 @@ module.exports = {
   setupFilesAfterEnv: ['<rootDir>/__tests__/setup.js'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
   transformIgnorePatterns: [
-    'node_modules/(?!(react-native|@react-native|@react-navigation)/)',
+    'node_modules/(?!(react-native|@react-native|@react-navigation|@react-native-community)/)',
   ],
   testMatch: ['**/__tests__/**/*.test.(ts|tsx|js)'],
   collectCoverageFrom: [
@@ -18,5 +18,8 @@ module.exports = {
       functions: 20,
       lines: 20,
     },
+  },
+  transform: {
+    '^.+\\.(js|jsx|ts|tsx)$': 'babel-jest',
   },
 };

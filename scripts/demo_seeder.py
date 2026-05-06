@@ -29,7 +29,8 @@ class DemoSeeder:
             "flood_nashik": self._flood_nashik_scenario,
             "earthquake_mumbai": self._earthquake_mumbai_scenario,
             "fire_pune": self._fire_pune_scenario,
-            "multi_crisis": self._multi_crisis_scenario
+            "multi_crisis": self._multi_crisis_scenario,
+            "ngo_coordination": self._ngo_coordination_scenario,
         }
         
         # Nashik coordinates
@@ -263,6 +264,239 @@ class DemoSeeder:
         print(f"\n💾 Scenario saved to: {filename}")
         return filename
     
+    def _ngo_coordination_scenario(self) -> Dict[str, Any]:
+        """
+        Multi-NGO coordination scenario for the NGO Command Dashboard demo.
+
+        Sets up:
+          - 4 NGOs with distinct zones, colours and resource types
+          - 6 crisis events across Nashik district (mix of flood + medical)
+          - 12 resources (boats, medical, rescue teams) distributed across NGOs
+          - 3 coverage gaps where no NGO is within 8 km
+          - 4 crisis assignments (resource → crisis)
+          - 2 coordination chat messages simulating NGO comms
+          - 2 coverage zones (rough polygons around NGO staging areas)
+
+        Returns a dict that can be serialised to JSON or POSTed to the API.
+        """
+        print("\n🤝 Generating NGO Coordination Scenario: Nashik Multi-Agency Response")
+
+        ts = datetime.utcnow().isoformat() + "Z"
+
+        # ------------------------------------------------------------------
+        # 4 NGOs
+        # ------------------------------------------------------------------
+        ngos = [
+            {
+                "ngo_id": "NGO_RELIEF_INDIA",
+                "name": "Relief India",
+                "contact": "Priya Sharma",
+                "zone": "Nashik",
+                "resource_types": ["Boats", "Rescue Team"],
+                "colour": "#f59e0b",
+                "status": "online",
+                "last_seen": ts,
+            },
+            {
+                "ngo_id": "NGO_MEDAID_MH",
+                "name": "MedAid Maharashtra",
+                "contact": "Dr. Rajan Kulkarni",
+                "zone": "Sinnar",
+                "resource_types": ["Medical", "Food & Water"],
+                "colour": "#3b82f6",
+                "status": "online",
+                "last_seen": ts,
+            },
+            {
+                "ngo_id": "NGO_SHELTER_FIRST",
+                "name": "Shelter First",
+                "contact": "Anita Deshmukh",
+                "zone": "Igatpuri",
+                "resource_types": ["Shelter", "Food & Water"],
+                "colour": "#10b981",
+                "status": "online",
+                "last_seen": ts,
+            },
+            {
+                "ngo_id": "NGO_RAPID_RESCUE",
+                "name": "Rapid Rescue Force",
+                "contact": "Col. Suresh Patil",
+                "zone": "Nandgaon",
+                "resource_types": ["Rescue Team", "Boats"],
+                "colour": "#8b5cf6",
+                "status": "online",
+                "last_seen": ts,
+            },
+        ]
+
+        # ------------------------------------------------------------------
+        # 6 crisis events
+        # ------------------------------------------------------------------
+        crises = [
+            {"id": "NK-001", "type": "flood",   "severity": 9, "lat": 19.9975, "lng": 73.7898, "affected_count": 8,  "description": "Boat capsized near Godavari ghat", "status": "active", "timestamp": ts},
+            {"id": "NK-002", "type": "medical", "severity": 6, "lat": 19.847,  "lng": 73.999,  "affected_count": 47, "description": "Mass illness outbreak — contaminated water", "status": "active", "timestamp": ts},
+            {"id": "NK-003", "type": "flood",   "severity": 4, "lat": 20.012,  "lng": 73.765,  "affected_count": 23, "description": "Rising water level, families on rooftops", "status": "active", "timestamp": ts},
+            {"id": "NK-004", "type": "flood",   "severity": 7, "lat": 19.780,  "lng": 73.920,  "affected_count": 31, "description": "Sinnar bridge submerged, village cut off", "status": "active", "timestamp": ts},
+            {"id": "NK-005", "type": "medical", "severity": 5, "lat": 20.055,  "lng": 73.680,  "affected_count": 18, "description": "Elderly persons require evacuation", "status": "active", "timestamp": ts},
+            {"id": "NK-006", "type": "flood",   "severity": 8, "lat": 19.910,  "lng": 74.050,  "affected_count": 62, "description": "Dam overflow, downstream villages at risk", "status": "active", "timestamp": ts},
+        ]
+
+        # ------------------------------------------------------------------
+        # 12 resources
+        # ------------------------------------------------------------------
+        resources = [
+            # Relief India — boats and rescue
+            {"resource_id": "BOAT_NK_01", "ngo_id": "NGO_RELIEF_INDIA", "type": "boat",   "name": "Rescue Boat Alpha", "capacity": 12, "lat": 19.9850, "lng": 73.7800, "status": "deployed",  "assigned_crisis_id": "NK-001", "battery_pct": 82,  "speed": 12, "heading": 45,  "updated_at": ts},
+            {"resource_id": "BOAT_NK_02", "ngo_id": "NGO_RELIEF_INDIA", "type": "boat",   "name": "Rescue Boat Beta",  "capacity": 12, "lat": 20.010,  "lng": 73.760,  "status": "deployed",  "assigned_crisis_id": "NK-003", "battery_pct": 67,  "speed": 8,  "heading": 270, "updated_at": ts},
+            {"resource_id": "BOAT_NK_03", "ngo_id": "NGO_RELIEF_INDIA", "type": "boat",   "name": "Rescue Boat Gamma", "capacity": 8,  "lat": 19.995,  "lng": 73.795,  "status": "available", "assigned_crisis_id": None,     "battery_pct": 100, "speed": 0,  "heading": 0,   "updated_at": ts},
+            {"resource_id": "TEAM_RI_01", "ngo_id": "NGO_RELIEF_INDIA", "type": "rescue", "name": "Rescue Team 1",     "capacity": 6,  "lat": 19.990,  "lng": 73.785,  "status": "available", "assigned_crisis_id": None,     "battery_pct": 100, "speed": 0,  "heading": 0,   "updated_at": ts},
+            # MedAid — medical and food
+            {"resource_id": "MED_MA_01",  "ngo_id": "NGO_MEDAID_MH",    "type": "medical","name": "Medical Unit Alpha", "capacity": 20, "lat": 19.840,  "lng": 73.990,  "status": "deployed",  "assigned_crisis_id": "NK-002", "battery_pct": 75,  "speed": 0,  "heading": 0,   "updated_at": ts},
+            {"resource_id": "MED_MA_02",  "ngo_id": "NGO_MEDAID_MH",    "type": "medical","name": "Medical Unit Beta",  "capacity": 20, "lat": 19.850,  "lng": 73.980,  "status": "available", "assigned_crisis_id": None,     "battery_pct": 90,  "speed": 0,  "heading": 0,   "updated_at": ts},
+            {"resource_id": "FOOD_MA_01", "ngo_id": "NGO_MEDAID_MH",    "type": "food",   "name": "Food Supply Van 1",  "capacity": 200,"lat": 19.855,  "lng": 73.975,  "status": "available", "assigned_crisis_id": None,     "battery_pct": 100, "speed": 0,  "heading": 0,   "updated_at": ts},
+            # Shelter First
+            {"resource_id": "SHLT_SF_01", "ngo_id": "NGO_SHELTER_FIRST","type": "shelter","name": "Shelter Unit A",     "capacity": 50, "lat": 20.040,  "lng": 73.665,  "status": "deployed",  "assigned_crisis_id": "NK-005", "battery_pct": 100, "speed": 0,  "heading": 0,   "updated_at": ts},
+            {"resource_id": "FOOD_SF_01", "ngo_id": "NGO_SHELTER_FIRST","type": "food",   "name": "Food Van Igatpuri",  "capacity": 150,"lat": 20.050,  "lng": 73.670,  "status": "available", "assigned_crisis_id": None,     "battery_pct": 100, "speed": 0,  "heading": 0,   "updated_at": ts},
+            # Rapid Rescue Force
+            {"resource_id": "BOAT_RR_01", "ngo_id": "NGO_RAPID_RESCUE", "type": "boat",   "name": "Heavy Rescue Vessel","capacity": 20, "lat": 19.905,  "lng": 74.045,  "status": "deployed",  "assigned_crisis_id": "NK-006", "battery_pct": 55,  "speed": 15, "heading": 90,  "updated_at": ts},
+            {"resource_id": "TEAM_RR_01", "ngo_id": "NGO_RAPID_RESCUE", "type": "rescue", "name": "Rapid Response Team", "capacity": 10, "lat": 19.915,  "lng": 74.040,  "status": "deployed",  "assigned_crisis_id": "NK-006", "battery_pct": 80,  "speed": 0,  "heading": 0,   "updated_at": ts},
+            {"resource_id": "TEAM_RR_02", "ngo_id": "NGO_RAPID_RESCUE", "type": "rescue", "name": "Dive Rescue Team",    "capacity": 6,  "lat": 19.780,  "lng": 73.925,  "status": "deployed",  "assigned_crisis_id": "NK-004", "battery_pct": 70,  "speed": 0,  "heading": 0,   "updated_at": ts},
+        ]
+
+        # ------------------------------------------------------------------
+        # 4 crisis assignments
+        # ------------------------------------------------------------------
+        assignments = [
+            {"crisis_id": "NK-001", "resource_id": "BOAT_NK_01", "ngo_id": "NGO_RELIEF_INDIA",  "eta_minutes": 3,  "status": "on_site",  "assigned_at": ts},
+            {"crisis_id": "NK-002", "resource_id": "MED_MA_01",  "ngo_id": "NGO_MEDAID_MH",    "eta_minutes": 0,  "status": "on_site",  "assigned_at": ts},
+            {"crisis_id": "NK-003", "resource_id": "BOAT_NK_02", "ngo_id": "NGO_RELIEF_INDIA",  "eta_minutes": 8,  "status": "en_route", "assigned_at": ts},
+            {"crisis_id": "NK-006", "resource_id": "BOAT_RR_01", "ngo_id": "NGO_RAPID_RESCUE",  "eta_minutes": 5,  "status": "en_route", "assigned_at": ts},
+        ]
+
+        # ------------------------------------------------------------------
+        # 3 coverage gaps (high-priority unserved areas)
+        # ------------------------------------------------------------------
+        gaps = [
+            {"lat": 19.847, "lng": 73.999, "crisis_id": "NK-002", "crisis_type": "medical", "crisis_severity": 6, "affected_people": 47, "distance_to_nearest_km": 8.2, "priority_score": 9.1},
+            {"lat": 19.780, "lng": 73.920, "crisis_id": "NK-004", "crisis_type": "flood",   "crisis_severity": 7, "affected_people": 31, "distance_to_nearest_km": 6.5, "priority_score": 7.8},
+            {"lat": 19.910, "lng": 74.050, "crisis_id": "NK-006", "crisis_type": "flood",   "crisis_severity": 8, "affected_people": 62, "distance_to_nearest_km": 4.1, "priority_score": 8.9},
+        ]
+
+        # ------------------------------------------------------------------
+        # 2 NGO coverage zone polygons
+        # ------------------------------------------------------------------
+        coverage_zones = [
+            {
+                "zone_id": "ZONE_RI_NASHIK",
+                "ngo_id": "NGO_RELIEF_INDIA",
+                "zone_name": "Nashik River Corridor",
+                "polygon_coords": [[19.95, 73.75], [20.05, 73.75], [20.05, 73.85], [19.95, 73.85]],
+            },
+            {
+                "zone_id": "ZONE_RR_EAST",
+                "ngo_id": "NGO_RAPID_RESCUE",
+                "zone_name": "Eastern Nashik",
+                "polygon_coords": [[19.87, 73.99], [19.95, 73.99], [19.95, 74.10], [19.87, 74.10]],
+            },
+        ]
+
+        # ------------------------------------------------------------------
+        # 2 coord chat messages
+        # ------------------------------------------------------------------
+        chat_messages = [
+            {
+                "ngo_id": "NGO_RELIEF_INDIA", "ngo_name": "Relief India", "ngo_colour": "#f59e0b",
+                "message": "BOAT_NK_01 on site at NK-001. 8 rescued, returning for second run. ETA 12 min.",
+                "timestamp": ts, "type": "human",
+            },
+            {
+                "ngo_id": "NGO_MEDAID_MH", "ngo_name": "MedAid Maharashtra", "ngo_colour": "#3b82f6",
+                "message": "MED_MA_01 treating 47 at NK-002. Need food supplies — can Shelter First assist?",
+                "timestamp": ts, "type": "human",
+            },
+        ]
+
+        scenario_data = {
+            "scenario": "ngo_coordination",
+            "crisis_type": "multi",
+            "severity": "critical",
+            "generated_at": ts,
+            "ngos": ngos,
+            "victims": [
+                {"type": c["type"], "severity": c["severity"],
+                 "location": {"lat": c["lat"], "lng": c["lng"]},
+                 "description": c["description"]}
+                for c in crises
+            ],
+            "crises": crises,
+            "resources": resources,
+            "assignments": assignments,
+            "coverage_gaps": gaps,
+            "coverage_zones": coverage_zones,
+            "chat_messages": chat_messages,
+            "responders": [
+                {"id": r["resource_id"], "type": r["type"], "ngo_id": r["ngo_id"],
+                 "location": {"lat": r["lat"], "lng": r["lng"]},
+                 "status": r["status"]}
+                for r in resources
+            ],
+        }
+
+        # ── Mutual Aid Requests ────────────────────────────────────────────
+        mutual_aid_requests = [
+            {
+                "request_id": "MAR_001",
+                "from_ngo": "NGO_RELIEF_INDIA",
+                "to_ngo": "NGO_MEDAID_MH",
+                "resource_type": "medical",
+                "quantity": 2,
+                "crisis_id": "NK-002",
+                "message": "Medical emergency cluster — need extra units",
+                "status": "accepted",
+                "created_at": (datetime.utcnow() - timedelta(hours=1)).isoformat() + "Z",
+                "updated_at": (datetime.utcnow() - timedelta(minutes=30)).isoformat() + "Z",
+            },
+            {
+                "request_id": "MAR_002",
+                "from_ngo": "NGO_SHELTER_FIRST",
+                "to_ngo": "NGO_RELIEF_INDIA",
+                "resource_type": "boat",
+                "quantity": 1,
+                "crisis_id": "NK-004",
+                "message": "Flood evacuation — need boat urgently",
+                "status": "pending",
+                "created_at": (datetime.utcnow() - timedelta(minutes=20)).isoformat() + "Z",
+                "updated_at": (datetime.utcnow() - timedelta(minutes=20)).isoformat() + "Z",
+            },
+            {
+                "request_id": "MAR_003",
+                "from_ngo": "NGO_RAPID_RESCUE",
+                "to_ngo": "NGO_SHELTER_FIRST",
+                "resource_type": "shelter",
+                "quantity": 1,
+                "crisis_id": "NK-006",
+                "message": "Dam overflow — need shelter units for 200 displaced",
+                "status": "pending",
+                "created_at": (datetime.utcnow() - timedelta(minutes=5)).isoformat() + "Z",
+                "updated_at": (datetime.utcnow() - timedelta(minutes=5)).isoformat() + "Z",
+            },
+        ]
+        if db:
+            for req in mutual_aid_requests:
+                db.collection("mutual_aid_requests").document(req["request_id"]).set(req)
+
+        scenario_data["mutual_aid_requests"] = mutual_aid_requests
+
+        print(f"   NGOs: {len(ngos)}")
+        print(f"   Crises: {len(crises)}")
+        print(f"   Resources: {len(resources)}")
+        print(f"   Assignments: {len(assignments)}")
+        print(f"   Coverage Gaps: {len(gaps)}")
+        print(f"   Mutual Aid Requests: {len(mutual_aid_requests)}")
+        print(f"   Chat Messages: {len(chat_messages)}")
+
+        return scenario_data
+
     def inject_live_events(self, scenario_name: str, interval_seconds: int = 5, duration_minutes: int = 5):
         """Inject events in real-time for live demo"""
         print(f"\n{'='*80}")
@@ -305,7 +539,7 @@ def main():
     parser = argparse.ArgumentParser(description="CrisisNet Demo Data Seeder")
     parser.add_argument(
         "--scenario",
-        choices=["flood_nashik", "earthquake_mumbai", "fire_pune", "multi_crisis"],
+        choices=["flood_nashik", "earthquake_mumbai", "fire_pune", "multi_crisis", "ngo_coordination"],
         default="flood_nashik",
         help="Demo scenario to seed"
     )
